@@ -19,7 +19,7 @@ public class Resource : MonoBehaviour
     {
         Picked?.Invoke(this);
         _collider.enabled = false;
-        transform.SetParent(newHost, true);
-        transform.position = new Vector3(0, _yOffset, 0);
+        transform.SetParent(newHost, false);
+        transform.localPosition = new Vector3(0, _yOffset, 0);
     }
 }

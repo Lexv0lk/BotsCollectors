@@ -1,20 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Collider))]
 public class Storage : MonoBehaviour
 {
     private List<Resource> _resources = new List<Resource>();
 
-    private void OnTriggerEnter(Collider other)
-    {
-        Resource resource;
+    public event UnityAction AddedResource;
 
-        if (other.TryGetComponent(out resource))
-        {
-            _resources.Add(resource);
-            resource.Pick(transform);
-            resource.gameObject.SetActive(false);
-        }
+    public int ResourcesCount => _resources.Count;
+
+    public void SendResource(Resource resource)
+    {
+        resource.Pick(transform);
+        _resources.Add(resource);
+        resource.gameObject.SetActive(false);
+        AddedResource?.Invoke();
     }
 }

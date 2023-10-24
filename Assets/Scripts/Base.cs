@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Base : MonoBehaviour
 {
-    [Header("Units")]
     [SerializeField] private Unit[] _units;
 
     [Header("Scanning")]
@@ -14,10 +13,20 @@ public class Base : MonoBehaviour
 
     private List<Unit> _busyUnits = new List<Unit>();
     private List<Unit> _freeUnits = new List<Unit>();
+    private Dictionary<Unit, SpawnPlace> _tasks = new Dictionary<Unit, SpawnPlace>();
+    private List<SpawnPlace> _freePlaces = new List<SpawnPlace>();
 
     private void Start()
     {
         _freeUnits = _units.ToList();
+        _freePlaces = _resourcePlaces.ToList();
+
+        foreach (var unit in _freeUnits)
+        {
+            unit.ResourceSent += OnResourceDelivered;
+            _tasks[unit] = null;
+        }
+
         StartCoroutine(Scanning());
     }
 
@@ -27,25 +36,35 @@ public class Base : MonoBehaviour
 
         while (true)
         {
-            if (_freeUnits.Count > 0)
-            {
-                SpawnPlace place = GetOccupiedPlace();
+            List<SpawnPlace> possiblePlaces = GetOccupiedPlaces();
 
-                if (place != null)
-                {
-                    Unit unit = _freeUnits[0];
-                    _freeUnits.Remove(unit);
-                    unit.PickUp(place.Resource);
-                    _busyUnits.Add(unit);
-                }
+            while (_freeUnits.Count > 0 && possiblePlaces.Count > 0)
+            {
+                SpawnPlace place = possiblePlaces[Random.Range(0, possiblePlaces.Count)];
+                possiblePlaces.Remove(place);
+                _freePlaces.Remove(place);
+
+                Unit unit = _freeUnits[0];
+                _freeUnits.Remove(unit);
+                unit.PickUp(place.Resource);
+                _busyUnits.Add(unit);
+                _tasks[unit] = place;
             }
 
             yield return delay;
         }
     }
 
-    private SpawnPlace GetOccupiedPlace()
+    private List<SpawnPlace> GetOccupiedPlaces()
     {
-        return _resourcePlaces.FirstOrDefault(x => x.IsOccupied);
+        return _freePlaces.Where(x => x.IsOccupied).ToList();
+    }
+
+    private void OnResourceDelivered(Unit unit)
+    {
+        _freePlaces.Add(_tasks[unit]);
+        _tasks[unit] = null;
+        _busyUnits.Remove(unit);
+        _freeUnits.Add(unit);
     }
 }

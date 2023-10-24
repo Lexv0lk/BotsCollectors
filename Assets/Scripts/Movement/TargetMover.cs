@@ -19,15 +19,17 @@ public class TargetMover : MonoBehaviour
         if (_target == null)
             return;
 
-        if (_target.position != _lastTargetPosition)
-            RecalculateDirection();
-
         float distance = Vector3.Distance(transform.position, _target.position);
 
         if (distance > _accuracy)
+        {
+            RecalculateDirection();
             _mover.Move(_currentDirection);
+        }
         else
+        {
             _mover.Move(Vector2.zero);
+        }
     }
 
     public void SetTarget(Transform target, float accuracy)

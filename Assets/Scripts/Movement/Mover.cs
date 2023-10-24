@@ -20,7 +20,7 @@ public class Mover : MonoBehaviour
     {
         Vector3 neededAccel = (_goalVelocity - _rigidbody.velocity) / Time.fixedDeltaTime;
         neededAccel = Vector3.ClampMagnitude(neededAccel, _maxAccelerationForce);
-        _rigidbody.AddForce(new Vector3(neededAccel.x * _rigidbody.mass, 0));
+        _rigidbody.AddForce(neededAccel * _rigidbody.mass);
     }
 
     public void Move(Vector3 direction)
