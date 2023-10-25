@@ -8,15 +8,17 @@ public class StorageDisplayer : MonoBehaviour
 
     private void OnEnable()
     {
-        _storage.AddedResource += OnResourceAdded;
+        _storage.AddedResource += OnResourcesCountChanged;
+        _storage.ResourcesSpent += OnResourcesCountChanged;
     }
 
     private void OnDisable()
     {
-        _storage.AddedResource -= OnResourceAdded;
+        _storage.AddedResource -= OnResourcesCountChanged;
+        _storage.ResourcesSpent -= OnResourcesCountChanged;
     }
 
-    private void OnResourceAdded()
+    private void OnResourcesCountChanged()
     {
         _text.text = _storage.ResourcesCount.ToString();
     }

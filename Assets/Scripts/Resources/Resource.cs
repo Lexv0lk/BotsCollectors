@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(Collider))]
-public class Resource : MonoBehaviour
+public class Resource : MonoBehaviour, ITarget
 {
     [SerializeField] private float _yOffset = 1f;
 
     private Collider _collider;
 
-    public event UnityAction<Resource> Picked;
+    public event UnityAction Picked;
 
     private void Awake()
     {
@@ -17,7 +17,7 @@ public class Resource : MonoBehaviour
 
     public void Pick(Transform newHost)
     {
-        Picked?.Invoke(this);
+        Picked?.Invoke();
         _collider.enabled = false;
         transform.SetParent(newHost, false);
         transform.localPosition = new Vector3(0, _yOffset, 0);
